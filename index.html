@@ -1,48 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ball in Maze Game</title>
-
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="./manifest.json" />
-
-  <!-- Icons for PWA -->
-  <link rel="icon" href="./icon.png" sizes="192x192" />
-  <link rel="apple-touch-icon" href="./icon.png" />
-
-  <!-- Meta tags for PWA appearance on mobile -->
-  <meta name="theme-color" content="#FFD700" />
-  <meta name="description" content="A fun maze game where you navigate a ball to the goal using device tilt." />
-
-  <!-- CSS -->
-  <link href="./index.css" rel="stylesheet" />
-
-  <!-- Tailwind CSS - make sure to configure this in your build -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ball in Maze</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/static/css/main.css">
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center h-screen">
-  <!-- Root element where React will render -->
-  <div id="root"></div>
-
-  <!-- Toast notification container -->
-  <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2"></div>
-
-  <!-- Service Worker Registration Script -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }).catch((error) => {
-          console.log('Service Worker registration failed:', error);
-        });
-      });
-    }
-  </script>
-
-  <!-- React App Script -->
-  <script src="%PUBLIC_URL%/main.js" defer></script>
+<body>
+    <div id="root"></div>
+    <div id="toast-container" class="fixed bottom-5 left-1/2 transform -translate-x-1/2"></div>
+    
+    <script src="/static/js/bundle.js"></script>
+    <script>
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
