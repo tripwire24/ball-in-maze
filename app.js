@@ -11,11 +11,12 @@ const maze = [
 const goalPosition = { x: 4, y: 4 };
 let ballPosition = { x: 1, y: 1 };
 let hasWon = false;
+let isPermissionGranted = false;
 
 // Initialize the game
 document.addEventListener('DOMContentLoaded', () => {
   createMaze();
-  initDeviceMotion();
+  setupMotionPermission();
 });
 
 function createMaze() {
@@ -47,7 +48,9 @@ function createMaze() {
 
 function updateBallPosition() {
   const ball = document.querySelector('.ball');
-  ball.style.transform = `translate(${ballPosition.x * 50}px, ${ballPosition.y * 50}px)`;
+  if (ball) {
+    ball.style.transform = `translate(${ballPosition.x * 50}px, ${ballPosition.y * 50}px)`;
+  }
 }
 
 function moveBall(dx, dy) {
@@ -75,6 +78,11 @@ function moveBall(dx, dy) {
 }
 
 function showWinMessage() {
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.textContent = 'You Win!';
@@ -85,33 +93,67 @@ function showWinMessage() {
   }, 3000);
 }
 
-function initDeviceMotion() {
-  if (window.DeviceOrientationEvent) {
-    // Request permission for iOS 13+ devices
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-      document.body.addEventListener('click', async () => {
-        try {
-          const permission = await DeviceOrientationEvent.requestPermission();
-          if (permission === 'granted') {
-            window.addEventListener('deviceorientation', handleOrientation);
-          }
-        } catch (error) {
-          console.error('Error requesting device orientation permission:', error);
+function setupMotionPermission() {
+  const instructionElement = document.createElement('div');
+  instructionElement.className = 'instruction';
+  instructionElement.textContent = 'Tap to Start';
+  document.body.appendChild(instructionElement);
+
+  // Handle iOS permission
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    document.body.addEventListener('click', async () => {
+      try {
+        const permission = await DeviceOrientationEvent.requestPermission();
+        if (permission === 'granted') {
+          isPermissionGranted = true;
+          initMotionListeners();
+          instructionElement.remove();
         }
-      }, { once: true });
-    } else {
-      // Add listener directly for non-iOS devices
-      window.addEventListener('deviceorientation', handleOrientation);
-    }
+      } catch (error) {
+        console.error('Error requesting motion permission:', error);
+        instructionElement.textContent = 'Motion access denied';
+      }
+    }, { once: true });
+  } else {
+    // For non-iOS devices
+    isPermissionGranted = true;
+    initMotionListeners();
+    instructionElement.remove();
+  }
+}
+
+function initMotionListeners() {
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener('deviceorientation', handleOrientation, true);
   }
 }
 
 function handleOrientation(event) {
-  // Convert orientation to movement
-  const x = event.gamma / 30; // Left/Right tilt (-90 to 90)
-  const y = event.beta / 30;  // Front/Back tilt (-180 to 180)
-  
-  if (x !== null && y !== null) {
-    moveBall(x * 0.1, y * 0.1);
+  if (!isPermissionGranted || hasWon) return;
+
+  // Get the device orientation values
+  let x = event.gamma; // Left/Right tilt (-90 to 90)
+  let y = event.beta;  // Front/Back tilt (-180 to 180)
+
+  // Adjust sensitivity based on device orientation
+  const isLandscape = window.innerWidth > window.innerHeight;
+  if (isLandscape) {
+    // Swap x and y for landscape mode
+    [x, y] = [y, -x];
+  }
+
+  // Normalize and scale the values
+  const moveX = (x / 45) * 0.1; // Adjust these values to change sensitivity
+  const moveY = (y / 45) * 0.1;
+
+  // Move the ball
+  if (!isNaN(moveX) && !isNaN(moveY)) {
+    moveBall(moveX, moveY);
   }
 }
+
+// Add resize listener to handle orientation changes
+window.addEventListener('resize', () => {
+  // Recalculate any necessary values based on new orientation
+  updateBallPosition();
+});
