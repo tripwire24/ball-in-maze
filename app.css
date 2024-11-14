@@ -1,0 +1,63 @@
+/* src/App.css */
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: #1a1a1a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.game-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  background-color: #ffd700;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.maze {
+  display: grid;
+  grid-template-columns: repeat(7, 50px);
+  grid-template-rows: repeat(6, 50px);
+  gap: 2px;
+}
+
+.maze-row {
+  display: flex;
+}
+
+.maze-cell {
+  width: 50px;
+  height: 50px;
+  background-color: #333;
+  border-radius: 5px;
+}
+
+.wall {
+  background-color: #666;
+}
+
+.goal {
+  background-color: #4caf50;
+}
+
+.ball {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #ffd700;
+  border-radius: 50%;
+}
