@@ -1,12 +1,13 @@
 const CACHE_NAME = 'ball-in-maze-cache-v1';
 
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon.png',
-  './css/main.css',
-  './js/app.js'
+  '.',
+  'index.html',
+  'manifest.json',
+  'icon-192.png',
+  'icon-512.png',
+  'app.css',
+  'app.js'
 ];
 
 self.addEventListener('install', (event) => {
