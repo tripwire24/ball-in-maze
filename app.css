@@ -1,5 +1,3 @@
-/* src/App.css */
-
 body, html {
   margin: 0;
   padding: 0;
@@ -10,7 +8,8 @@ body, html {
   justify-content: center;
   height: 100vh;
   font-family: Arial, sans-serif;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
+  touch-action: none; /* Prevent default touch behaviors */
 }
 
 .game-container {
@@ -18,7 +17,6 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  touch-action: none; /* Prevent default touch behaviors */
 }
 
 .toast {
@@ -32,6 +30,7 @@ body, html {
   border-radius: 10px;
   font-weight: bold;
   z-index: 1000;
+  animation: fadeInOut 3s ease-in-out forwards;
 }
 
 .maze {
@@ -46,7 +45,7 @@ body, html {
 }
 
 .maze-row {
-  display: flex;
+  display: contents;
 }
 
 .maze-cell {
@@ -73,7 +72,7 @@ body, html {
   background-color: #ffd700;
   border-radius: 50%;
   box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  will-change: transform;
+  transition: transform 0.1s ease-out;
   top: 5px;
   left: 5px;
 }
@@ -82,4 +81,33 @@ body, html {
   0% { opacity: 0.6; }
   50% { opacity: 1; }
   100% { opacity: 0.6; }
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translate(-50%, 20px); }
+  10% { opacity: 1; transform: translate(-50%, 0); }
+  90% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -20px); }
+}
+
+/* Add touch instruction for mobile */
+.game-container::before {
+  content: "Tap screen to enable motion controls";
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0.8;
+  animation: fadeOut 5s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 0.8; }
+  70% { opacity: 0.8; }
+  100% { opacity: 0; }
 }
