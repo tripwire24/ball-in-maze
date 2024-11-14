@@ -9,7 +9,7 @@ body, html {
   height: 100vh;
   font-family: Arial, sans-serif;
   overflow: hidden;
-  touch-action: none; /* Prevent default touch behaviors */
+  touch-action: none;
 }
 
 .game-container {
@@ -17,6 +17,21 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  touch-action: none;
+}
+
+.instruction {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  font-size: 24px;
+  z-index: 1000;
+  animation: pulse 2s infinite;
 }
 
 .toast {
@@ -42,6 +57,7 @@ body, html {
   padding: 10px;
   background: #222;
   border-radius: 10px;
+  touch-action: none;
 }
 
 .maze-row {
@@ -75,6 +91,7 @@ body, html {
   transition: transform 0.1s ease-out;
   top: 5px;
   left: 5px;
+  will-change: transform;
 }
 
 @keyframes pulse {
@@ -90,24 +107,17 @@ body, html {
   100% { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* Add touch instruction for mobile */
-.game-container::before {
-  content: "Tap screen to enable motion controls";
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  padding: 10px 20px;
-  border-radius: 20px;
-  font-size: 14px;
-  white-space: nowrap;
-  opacity: 0.8;
-  animation: fadeOut 5s forwards;
+/* Media query for smaller screens */
+@media (max-width: 400px) {
+  .maze {
+    transform: scale(0.8);
+  }
 }
 
-@keyframes fadeOut {
-  0% { opacity: 0.8; }
-  70% { opacity: 0.8; }
-  100% { opacity: 0; }
+/* Prevent scrolling on mobile */
+* {
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
