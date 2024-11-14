@@ -1,7 +1,4 @@
-// src/App.js
-
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import './App.css';
 
 const maze = [
@@ -19,15 +16,42 @@ const App = () => {
   const [ballPosition, setBallPosition] = useState({ x: 1, y: 1 });
   const [hasWon, setHasWon] = useState(false);
 
-  // Initialize accelerometer
+  // Initialize device motion
   useEffect(() => {
-    if ('Accelerometer' in window) {
-      const accelerometer = new Accelerometer({ frequency: 10 });
-      accelerometer.addEventListener('reading', () => {
-        moveBall(accelerometer.x, accelerometer.y);
-      });
-      accelerometer.start();
-    }
+    const handleMotion = (event) => {
+      // Get acceleration including gravity
+      const x = event.accelerationIncludingGravity.x;
+      const y = event.accelerationIncludingGravity.y;
+      
+      if (x !== null && y !== null) {
+        // Scale down the movement
+        moveBall(x * 0.05, y * 0.05);
+      }
+    };
+
+    // Request permission for iOS 13+ devices
+    const requestPermission = async () => {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        try {
+          const permission = await DeviceOrientationEvent.requestPermission();
+          if (permission === 'granted') {
+            window.addEventListener('devicemotion', handleMotion);
+          }
+        } catch (error) {
+          console.error('Error requesting device motion permission:', error);
+        }
+      } else {
+        // Add listener directly for non-iOS devices
+        window.addEventListener('devicemotion', handleMotion);
+      }
+    };
+
+    requestPermission();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('devicemotion', handleMotion);
+    };
   }, []);
 
   const moveBall = (dx, dy) => {
@@ -61,21 +85,18 @@ const App = () => {
             {row.map((cell, colIndex) => (
               <div
                 key={`${rowIndex}-${colIndex}`}
-                className={`maze-cell ${cell === 1 ? 'wall' : ''} ${colIndex === goalPosition.x && rowIndex === goalPosition.y ? 'goal' : ''}`}
-              ></div>
+                className={`maze-cell ${cell === 1 ? 'wall' : ''} ${
+                  colIndex === goalPosition.x && rowIndex === goalPosition.y ? 'goal' : ''
+                }`}
+              />
             ))}
           </div>
         ))}
-        <motion.div
+        <div
           className="ball"
-          animate={{
-            x: ballPosition.x * 50,
-            y: ballPosition.y * 50
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 30
+          style={{
+            transform: `translate(${ballPosition.x * 50}px, ${ballPosition.y * 50}px)`,
+            transition: 'transform 0.1s ease-out'
           }}
         />
       </div>
